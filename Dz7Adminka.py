@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import pytest
 from selenium import webdriver
-
 import Dz2LitecartLogin
 
 
 @pytest.fixture
 def driver(request):
     wd = webdriver.Chrome()
+    wd.implicitly_wait(60)
     request.addfinalizer(wd.quit)
     return wd
 
@@ -15,24 +15,17 @@ def driver(request):
 def test_7Adminka(driver):
     login = Dz2LitecartLogin.test_LitecartLogin(driver)
     d = driver
-    menu = d.find_element_by_css_selector("#box-apps-menu")
-    items = menu.find_elements_by_css_selector("#app-")
-    print items
-    i = items[0]
+    items = d.find_element_by_css_selector("#box-apps-menu").find_elements_by_tag_name("a")
+    links = []
     for item in items:
-        items[i] = item
-        item.click
-        # for item1 in items:
-        #     item1 = d.find_element_by_css_selector("#app-")
-        #     assert item1.get_attribute("class") == 'selected'
-        i = i + 1
-        print item
-        # subitems = d.find_elements_by_css_selector("doc-template")
-        # for subitem in subitems:
-        #     i = subitems[0]
-        #     subitems[i] = subitem.find_element_by_css_selector("a").click
-        #     for subitem1 in subitems:
-        #         subitem1 = d.find_element_by_css_selector("doc-template")
-        #         assert subitem1.get_attribute("class") == 'selected'
-        #         i = i + 1
-        #     print subitem1
+        links.append(item.get_attribute("href"))
+    for link in links:
+        d.find_element_by_xpath('//a[@href="' + link + '"]').click()
+        submenu = d.find_element_by_css_selector("#box-apps-menu").find_element_by_css_selector("li#app-.selected")
+        subitems = submenu.find_elements_by_tag_name("a")
+        sublinks = []
+        for subitem in subitems:
+            sublinks.append(subitem.get_attribute("href"))
+        for sublink in sublinks:
+            d.find_element_by_xpath('//a[@href="' + sublink + '"]').click()
+            d.find_element_by_css_selector("h1")
