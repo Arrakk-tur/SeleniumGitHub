@@ -6,7 +6,7 @@ from selenium import webdriver
 @pytest.fixture
 def driver(request):
     wd = webdriver.Chrome()
-    wd.implicitly_wait(15)
+    wd.implicitly_wait(60)
     request.addfinalizer(wd.quit)
     return wd
 
@@ -14,5 +14,6 @@ def driver(request):
 def test_8Stiker(driver):
     d = driver
     d.get('http://localhost/litecart')
-    st = d.find_elements_by_css_selector(".sticker")
-    print len(st)
+    elements = d.find_elements_by_css_selector(".product.column.shadow.hover-light")
+    for elem in elements:
+        len(elem.find_elements_by_css_selector('.sticker')) == 1
